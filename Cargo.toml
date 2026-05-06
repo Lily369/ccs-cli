@@ -1,7 +1,14 @@
 [package]
-name = "ccs"
+name = "ccs-cli"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+description = "Terminal TUI to select Claude Code providers from cc-switch and launch claude"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Lily369/ccs-cli"
+
+[[bin]]
+name = "ccs"
+path = "src/main.rs"
 
 [dependencies]
 crossterm = "0.29.0"

@@ -12,12 +12,15 @@ fn main() {
             println!("ccs {}", env!("CARGO_PKG_VERSION"));
             process::exit(0);
         }
+        // --safe 不提前 exit，继续走正常流程
+        Some("--safe") => {}
         Some("--help" | "-h") => {
             println!("ccs - Claude Code Switcher\n");
             println!("用法: ccs [选项]\n");
             println!("选项:");
             println!("  --version, -v  显示版本");
-            println!("  -dsp           跳过权限确认 (dangerously-skip-permissions)");
+            println!("  --resume, -r   [session] 恢复会话，可指定 session ID");
+            println!("  --safe         普通模式，不跳过权限确认");
             println!("  --print        只打印将注入的 env / argv，不启动 claude（调试用）");
             println!("  --help, -h     显示帮助");
             process::exit(0);
@@ -42,11 +45,22 @@ fn main() {
         process::exit(1);
     }
 
-    let skip_permissions = args.contains(&"-dsp".to_string());
+    // 默认跳过权限确认；--safe 关闭此行为
+    let skip_permissions = !args.contains(&"--safe".to_string());
     let dry_run = args.contains(&"--print".to_string());
 
+    // --resume / -r [session-id]
+    let resume = args
+        .iter()
+        .position(|a| a == "--resume" || a == "-r")
+        .map(|i| {
+            args.get(i + 1)
+                .filter(|next| !next.starts_with('-'))
+                .cloned()
+        });
+
     match tui::select(&providers) {
-        Some(provider) => launcher::exec_claude(provider, skip_permissions, dry_run),
+        Some(provider) => launcher::exec_claude(provider, skip_permissions, dry_run, resume),
         None => process::exit(0),
     }
 }

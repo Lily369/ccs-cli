@@ -27,7 +27,12 @@ fn temp_config_path(provider_id: &str) -> PathBuf {
     }
 }
 
-pub fn exec_claude(provider: &Provider, skip_permissions: bool, dry_run: bool) {
+pub fn exec_claude(
+    provider: &Provider,
+    skip_permissions: bool,
+    dry_run: bool,
+    resume: Option<Option<String>>,
+) {
     // 拷贝 cc-switch 的整份 settings_config，仅剔掉 cc-switch 自身的元数据字段。
     // env 块保留在 JSON 里，由 claude --settings 自行解析。
     let mut config = provider.settings_config.clone();
@@ -46,6 +51,12 @@ pub fn exec_claude(provider: &Provider, skip_permissions: bool, dry_run: bool) {
 
     let mut cmd = process::Command::new("claude");
     cmd.args(["--settings", temp_path.to_str().unwrap_or("")]);
+    if let Some(session) = &resume {
+        cmd.arg("--resume");
+        if let Some(id) = session {
+            cmd.arg(id);
+        }
+    }
     if skip_permissions {
         cmd.arg("--dangerously-skip-permissions");
     }
@@ -56,6 +67,12 @@ pub fn exec_claude(provider: &Provider, skip_permissions: bool, dry_run: bool) {
         println!("temp settings: {}", temp_path.display());
         println!("\nargv:");
         print!("  claude --settings {}", temp_path.display());
+        if let Some(session) = &resume {
+            print!(" --resume");
+            if let Some(id) = session {
+                print!(" {id}");
+            }
+        }
         if skip_permissions {
             print!(" --dangerously-skip-permissions");
         }
