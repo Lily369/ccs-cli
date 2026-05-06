@@ -2,6 +2,8 @@
 
 [cc-switch](https://github.com/farion1231/cc-switch) 的终端伴侣工具。
 
+[![LINUX DO](https://linux.do/images/linxindo-light.svg)](https://linux.do) [![LINUX DO](https://linux.do/images/linxindo-dark.svg)](https://linux.do)
+
 cc-switch（60k+ stars）提供了强大的 GUI 来管理 Claude Code 的 API 供应商，但每次切换供应商都要打开桌面应用。**ccs 把这个选择搬进了终端**——读取 cc-switch 的数据库，TUI 快速选供应商，一键启动 `claude`。不用离开键盘。
 
 ## 与 cc-switch 的关系
